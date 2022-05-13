@@ -1,10 +1,9 @@
-package main
+package simple_discover_client
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -139,67 +138,4 @@ func (client *DiscoverClient) rest(verb string, rq, rs interface{}) error {
 	}
 
 	return nil
-}
-
-/**
- * Flags
- */
-
-type Flags struct {
-	serverAddress string
-	serverPort    int
-}
-
-/**
- * Main
- */
-
-func main() {
-	fmt.Printf("Hello this is simple discover client\n")
-
-	// Parse flags
-	var flags Flags
-
-	flag.StringVar(&flags.serverAddress, "a", "", "Server address")
-	flag.IntVar(&flags.serverPort, "s", 65001, "Server port")
-	flag.Parse()
-
-	if flags.serverAddress == "" {
-		fmt.Printf("Error: please specify server address with -a address\n")
-		os.Exit(1)
-	}
-	if flags.serverPort <= 0 || flags.serverPort > 65536 {
-		fmt.Printf("Error: invalid server port %d\n", flags.serverPort)
-		os.Exit(1)
-	}
-
-	// Construct the client
-	serverAddress := flags.serverAddress
-	serverPort := flags.serverPort
-
-	client, err := NewDiscoverClient(serverAddress, serverPort)
-	if err != nil {
-		fatal("cannot create client", err)
-	}
-	defer client.Close()
-
-	// Try a few operations
-	if err = client.Put("kostya", "year-born", `1972`); err != nil {
-		fatal("cannot put value", err)
-	}
-	if err = client.Put("kostya", "height", `6'2"`); err != nil {
-		fatal("cannot put value", err)
-	}
-	if err = client.Put("kostya", "weight", `too much`); err != nil {
-		fatal("cannot put value", err)
-	}
-
-	itemList, err := client.Get("kostya")
-	if err != nil {
-		fatal("cannot get values", err)
-	}
-
-	for _, item := range itemList {
-		fmt.Printf("Value: %q -> %q\n", item.Sub, item.Value)
-	}
 }
