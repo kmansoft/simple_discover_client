@@ -11,11 +11,6 @@ import (
 	"time"
 )
 
-func fatal(msg string, err error) {
-	fmt.Printf("Fatal error %s: %v\n", msg, err)
-	os.Exit(1)
-}
-
 const (
 	contentTypeJson = "application/json; charset=UTF-8"
 )
